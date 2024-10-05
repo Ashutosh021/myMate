@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -41,11 +41,11 @@ const userSchema = new mongoose.Schema({
   },
   notes: [{
     type: String,
-    default: null,
+    default: [], // Default to an empty array
   }],
   weblinks: [{
     type: String,
-    default: null,
+    default: [], // Default to an empty array
   }],
   education:[{
     type: mongoose.Schema.Types.ObjectId,
@@ -88,18 +88,18 @@ const userSchema = new mongoose.Schema({
     type: Date, // Token expiration time
     default: null,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
 }, {
   timestamps: true, // Automatically creates createdAt and updatedAt fields
 });
 
 
+// Virtual fields for followers and following count
+userSchema.virtual('followerCount').get(function () {
+  return this.followers.length;
+});
+
+userSchema.virtual('followingCount').get(function () {
+  return this.following.length;
+});
 
 module.exports = mongoose.model('user', userSchema);
