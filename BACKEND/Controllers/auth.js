@@ -1,6 +1,9 @@
 const userModel = require("../Models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
+
 
 const Login = async (req, res) => {
   try {
@@ -25,7 +28,7 @@ const Login = async (req, res) => {
     }
 
     // Generate JWT token
-    let token = jwt.sign({ email: user.email, id: user._id }, "secret", {
+    let token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d",
     });
 
@@ -69,7 +72,7 @@ const Signup = async (req, res) => {
     });
 
     // Generate JWT token
-    let token = jwt.sign({ email: user.email, id: user._id }, "secret", {
+    let token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d",
     });
 
