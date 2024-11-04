@@ -1,5 +1,5 @@
 const userSchema = require("../Models/user");
-const cloudinary = require("../Config/cloudinary");
+const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
 const Profile = (req, res) => {

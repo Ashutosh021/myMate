@@ -1,5 +1,5 @@
 const Post = require("../Models/post");
-const cloudinary = require("../Config/cloudinary");
+const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
 // Create Post

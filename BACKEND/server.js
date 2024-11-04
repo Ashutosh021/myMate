@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors'); // Import cors
 const app = express();
-const dbConnect = require('./Config/db');
+const dbConnect = require('./config/db');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./Routes/auth');
 const postRoutes = require('./Routes/post');
