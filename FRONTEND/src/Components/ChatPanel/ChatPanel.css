@@ -1,0 +1,21 @@
+.chat-panel {
+    width: 300px;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    background-color: #ffffff;
+  }
+  .chat-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    float: right;
+  }
+  .chat-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+  }
+  .chat-message.user {
+    text-align: right;
+    background-color: #e1f5fe;
