@@ -11,6 +11,8 @@ import SignUp from "./Components/Signup/Signup";
 import Login from "./Components/Login/Login";
 import Feed from "./Components/Feed/Feed";
 import Home from "./Components/Home/Home";
+import Future from "./Components/Future/Future";
+import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -18,9 +20,18 @@ function App() {
       <NavbarRender />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/feed" element={<Feed />} />
+        <Route
+          path="/feed"
+          element={
+            <ProtectedRoute>
+              <Feed />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/infuture" element={<Future/>}/>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+
       </Routes>
       <FooterRender />
     </Router>

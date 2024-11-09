@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './signup.css';
 import logo from "/logo.png";
 import { NavLink } from 'react-router-dom';
 
 const SignUp = () => {
+  useEffect(() => {
+    document.title = "Signup";
+}, []); 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,6 +31,8 @@ const SignUp = () => {
       const data = await response.json();
       setMessage(data.message);
       if (data.success) {
+        localStorage.setItem("authToken",data.token)
+        window.location.href = '/feed'; 
         setFormData({ name: '', email: '', password: '' });
       }
     } catch (error) {

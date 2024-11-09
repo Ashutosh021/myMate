@@ -1,0 +1,96 @@
+/* Container for the login page */
+.mymate-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 50px 0;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  /* Main content area */
+  .mymate-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* Left section styling */
+  .left-section {
+    padding: 40px;
+    max-width: 500px;
+  }
+  
+  .left-section h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Styling for Google and Email sign-in buttons */
+  .google-signin,
+  .email-signin {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .google-signin {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+  }
+  
+  .email-signin {
+    background-color: white;
+    color: #333;
+    border: 1px solid #333;
+  }
+  
+  .google-signin:hover {
+    background-color: #357ae8;
+  }
+  
+  .email-signin:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Paragraph and link styles */
+  .left-section p {
+    font-size: 0.875rem;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  
+  .left-section a {
+    color: #0073b1;
+    text-decoration: none;
+  }
+  
+  .left-section a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Right section styling */
+  .right-section {
+    width: 50%;
+    overflow: hidden;
+  }
+  
+  .right-section img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  

@@ -10,10 +10,17 @@ const PostFeed = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/posts/feed');
+        const authToken = localStorage.getItem("authToken");
+        const response = await fetch('http://localhost:5000/api/posts/feed',{
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
         const data = await response.json();
-        console.log("Fetched posts data:", data); // Debugging line
-        // Check if data is an array or an object containing posts array
+        // console.log("Fetched posts data:", data); // Debugging line
+
         if (Array.isArray(data)) {
           setPosts(data);
         } else if (Array.isArray(data.posts)) {
@@ -31,9 +38,27 @@ const PostFeed = () => {
     fetchPosts();
   }, []);
 
-  const handlePostSubmit = () => {
+  // Handle new post submission
+  const handlePostSubmit = async () => {
     console.log("Posted content:", postContent);
-    setPostContent('');
+    if (!postContent.trim()) return; // Prevent empty posts
+
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const response = await fetch('http://localhost:5000/api/posts/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ content: postContent }),
+      });
+      const newPost = await response.json();
+      setPosts([newPost, ...posts]); // Add the new post to the front of the list
+      setPostContent('');
+    } catch (error) {
+      console.error('Error posting content:', error);
+    }
   };
 
   return (
@@ -59,9 +84,11 @@ const PostFeed = () => {
           <div key={post._id} className="post">
             {/* Post Header */}
             <div className="post-header">
-              <img src="/user-avatar.png" alt="Author" className="post-avatar" />
+              <img src={post.author.profilePic} alt="Author" className="post-avatar" />
               <div>
-                <p className="post-author">Author Name</p> {/* Replace with actual author data if available */}
+                <p className="post-author">
+                  {post.author.name || "Unknown Author"} {/* Replace with actual author name */}
+                </p>
                 <p className="post-created-at">{new Date(post.createdAt).toLocaleString()}</p>
               </div>
             </div>
@@ -70,7 +97,7 @@ const PostFeed = () => {
             <p className="post-content">{post.content}</p>
 
             {/* Post Media */}
-            {post.media && post.media.length > 0 && (
+            {post.media?.length > 0 && (
               <img src={post.media[0]} alt="Post Media" className="post-media" />
             )}
 

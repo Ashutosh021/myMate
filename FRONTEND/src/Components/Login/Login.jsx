@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './login.css';
 import { NavLink } from 'react-router-dom';
 import logo from "/logo.png";
@@ -8,6 +8,9 @@ import { FaFacebookF } from "react-icons/fa";
 
 
 const Login = () => {
+  useEffect(() => {
+    document.title = "Login";
+}, []); 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message,setMessage] = useState("");
 
@@ -28,8 +31,10 @@ const Login = () => {
       });
       const data = await response.json();
       if (data.success) {
+        console.log(data)
+        localStorage.setItem("authToken",data.token)
         setFormData({ email: '', password: '' });
-        window.location.href = '/'; // Redirect to home page on success
+        window.location.href = '/feed'; // Redirect to home page on success
       }
     } catch (error) {
       setMessage('Error: ' + error.message);
@@ -68,7 +73,7 @@ const Login = () => {
               required
             />
             <br/>
-            <button type='submit' className="btn btn-success btnsignup">Sign in</button>
+            <button type='submit' className="btn btn-success btnsignup">Login</button>
           </form>
         </div>
         <br/>

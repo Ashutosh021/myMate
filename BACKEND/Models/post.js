@@ -20,7 +20,7 @@ const postSchema = new mongoose.Schema(
     ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Refers to the user who created the post
+      ref: "user", // Refers to the user who created the post
       required: true,
     },
     likes: [

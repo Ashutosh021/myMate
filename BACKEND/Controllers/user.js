@@ -2,12 +2,29 @@ const userSchema = require("../Models/user");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
-const Profile = (req, res) => {
+const Profile = async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "User not authenticated" });
   }
-  res.send(req.user);
+
+  const userId = req.user._id;
+
+  try {
+    // Await the result of the find query
+    const user = await userSchema.findOne({ _id: userId }).populate('following');
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Return only the necessary data
+    res.json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
+
 
 const UpdateProfile = async (req, res) => {
   const { name, email, bio } = req.body;
