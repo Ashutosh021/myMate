@@ -1,0 +1,127 @@
+main {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .ll {
+    width: 70%;
+    background-color: #efece8;
+    padding: 20px;
+  }
+  
+  .rr {
+    width: 30%;
+    background-color: #5D9C81;
+    padding-top: 20vh;
+    text-align: center;
+    padding: 20px;
+  }
+  .rr>h1{
+    margin-top: 200px;
+  }
+  .logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .signup {
+    text-align: center;
+    padding-top: 10px;
+    font-family: 'Inria Sans';
+    margin-top: 100px;
+  }
+  
+  .form-input {
+    background-color: #E7E7E7;
+    width: 70vh;
+    height: 40px;
+    border-radius: 10px;
+    padding-left: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+  }
+  
+  .form {
+    text-align: left;
+    margin-left: 25%;
+  }
+  
+  .btnsignup {
+    margin-left: 30vh;
+  }
+  
+  p {
+    font-size: larger;
+  }
+  
+  hr {
+    width: 50%;
+  }
+  
+  .icon {
+    width: 50px;
+    display: inline-flex;
+    margin-left: 25%;
+    margin-right: 15%;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    /* Stack the layout vertically on smaller screens */
+    main {
+      flex-direction: column;
+      height: auto;
+    }
+  
+    .ll, .rr {
+      width: 100%;
+      padding: 10px;
+    }
+  
+    .rr {
+      padding-top: 20vh;
+    }
+    .rr>h1{
+        margin-top: 10px;
+      }
+    .logo {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .signup {
+      margin-top: 30px;
+      padding-top: 20px;
+    }
+  
+    .form-input {
+      width: 90%;
+      height: 35px;
+      margin-bottom: 20px;
+    }
+  
+    .form {
+      margin-left: 10%;
+      width: 80%;
+    }
+  
+    .btnsignup {
+      margin-left: 10%;
+      width: 80%;
+    }
+  
+    p {
+      font-size: medium;
+    }
+  
+    .icon {
+      font-size: 25px;
+      margin-left: 10%;
+      margin-right: 10%;
+    }
+  
+    hr {
+      width: 70%;
+    }
+  }
+  
