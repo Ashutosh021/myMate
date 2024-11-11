@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import './PostFeed.css';
+import CreatePost from "../CreatePost/PostForm";
 
 const PostFeed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [postContent, setPostContent] = useState('');
 
   // Fetch posts from the backend API
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        const response = await fetch('http://localhost:5000/api/posts/feed',{
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
+        const response = await fetch('http://localhost:5000/api/posts/feed', {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
         const data = await response.json();
-        // console.log("Fetched posts data:", data); // Debugging line
 
         if (Array.isArray(data)) {
           setPosts(data);
@@ -38,43 +36,15 @@ const PostFeed = () => {
     fetchPosts();
   }, []);
 
-  // Handle new post submission
-  const handlePostSubmit = async () => {
-    console.log("Posted content:", postContent);
-    if (!postContent.trim()) return; // Prevent empty posts
-
-    try {
-      const authToken = localStorage.getItem("authToken");
-      const response = await fetch('http://localhost:5000/api/posts/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ content: postContent }),
-      });
-      const newPost = await response.json();
-      setPosts([newPost, ...posts]); // Add the new post to the front of the list
-      setPostContent('');
-    } catch (error) {
-      console.error('Error posting content:', error);
-    }
+  // Callback to add the new post to the top of the posts list
+  const handlePostCreated = (newPost) => {
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
   return (
     <div className="post-feed">
-      {/* New Post Input */}
-      <div className="new-post">
-        <img src="/user-avatar.png" alt="User Avatar" className="new-post-avatar" />
-        <input
-          type="text"
-          placeholder="Write a post..."
-          value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
-          className="new-post-input"
-        />
-        <button onClick={handlePostSubmit} className="new-post-button">Post</button>
-      </div>
+      {/* Pass handlePostCreated to CreatePost */}
+      <CreatePost onPostCreated={handlePostCreated} />
 
       {/* Loading Indicator */}
       {loading ? (
@@ -87,7 +57,7 @@ const PostFeed = () => {
               <img src={post.author.profilePic} alt="Author" className="post-avatar" />
               <div>
                 <p className="post-author">
-                  {post.author.name || "Unknown Author"} {/* Replace with actual author name */}
+                  {post.author.name || "Unknown Author"}
                 </p>
                 <p className="post-created-at">{new Date(post.createdAt).toLocaleString()}</p>
               </div>

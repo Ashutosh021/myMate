@@ -1,6 +1,6 @@
 const Post = require("../Models/post");
 const User = require("../Models/user")
-// const cloudinary = require("../config/cloudinary");
+const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
 // Create Post
@@ -9,22 +9,22 @@ exports.createPost = async (req, res) => {
   const userId = req.user?._id;
 
   try {
-    // const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-    //   folder: "myMate-Posts",
-    //   resource_type: "auto",
-    // });
+    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: "myMate-Posts",
+      resource_type: "auto",
+    });
 
     const post = new Post({
       author: userId,
       content,
-      // media: uploadResult.secure_url,
-      // mediaPublicId: uploadResult.public_id
+      media: uploadResult.secure_url,
+      mediaPublicId: uploadResult.public_id
     });
     await post.save();
 
-    // fs.unlink(req.file.path, (err) => {
-    //   if (err) console.error("File deletion error:", err);
-    // });
+    fs.unlink(req.file.path, (err) => {
+      if (err) console.error("File deletion error:", err);
+    });
 
     res.status(201).json(post);
   } catch (err) {
