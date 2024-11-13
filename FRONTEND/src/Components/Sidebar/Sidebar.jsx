@@ -17,6 +17,9 @@ const Sidebar = () => {
           },
         });
         const data = await response.json();
+        console.log(data);
+        
+        // console.log(data.user);
 
         // Accessing the 'following' data from the 'user' object
         if (data.user && data.user.following) {
@@ -32,7 +35,7 @@ const Sidebar = () => {
 
   // Function to navigate to the user's profile page when their name or image is clicked
   const handleUserClick = (userId) => {
-    navigate(`/api/user/getuser/${userId}`);
+    navigate(`/user_profile/about/${userId}`);
   };
 
   return (

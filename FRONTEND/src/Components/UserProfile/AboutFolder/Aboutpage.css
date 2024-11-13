@@ -1,0 +1,11 @@
+.maincon{
+    display: flex;
+}
+
+.sidebar_container{
+    width: 30%;
+}
+
+.mainabout{
+    width: 70%;
+}

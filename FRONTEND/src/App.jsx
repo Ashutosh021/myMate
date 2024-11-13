@@ -13,6 +13,9 @@ import Feed from "./Components/Feed/Feed";
 import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
+import Aboutpage from "./Components/UserProfile/About";
+import Userpost from "./Components/UserProfile/UserPosts";
+
 
 function App() {
   return (
@@ -32,6 +35,62 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
 
+        <Route
+          path="/user_profile/about/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/education/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/projects/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/posts/:id"
+          element={
+            <ProtectedRoute>
+              <Userpost />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/followers/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/following/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user_profile/weblinks/:id"
+          element={
+            <ProtectedRoute>
+              <Aboutpage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <FooterRender />
     </Router>

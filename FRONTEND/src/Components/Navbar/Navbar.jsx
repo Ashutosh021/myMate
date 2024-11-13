@@ -1,15 +1,19 @@
-import React from 'react';
-import { FaSearch, FaBell, FaSun, FaMoon } from 'react-icons/fa';
-import './Navbar.css';
+import React from "react";
+import { FaSearch, FaBell, FaSun, FaMoon } from "react-icons/fa";
+import "./Navbar.css";
 import logo from "/logo.png";
-import defaultProfile from '/user.jpg';
+import defaultProfile from "/user.jpg";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   return (
     <div className="navbar">
-      <div className="navbar-logo">
-        <img src={logo} alt="My Mate Logo" />
-      </div>
+      <NavLink to="/feed">
+        <div className="navbar-logo">
+          <img src={logo} alt="My Mate Logo" />
+        </div>
+      </NavLink>
+
       <div className="navbar-search">
         <FaSearch className="search-icon" />
         <input

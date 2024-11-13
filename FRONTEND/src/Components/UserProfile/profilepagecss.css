@@ -1,0 +1,27 @@
+.maincontainer{
+    display: flex;
+    height: 100%;
+    /* position: relative; */
+    min-height: 80vh;
+}
+
+.sidebarcontainer{
+    min-height: 90vh;
+    width: 20%;
+    background-color: #2d6dce;
+}
+.stickinprofilepage{
+    position: sticky;
+    top: 15vh;
+}
+
+.centercontainer{
+    width: 60%;
+}
+
+.photocontainer{
+    width: 20%;
+    background-color: #2d6dce;
+    min-height: 100%;
+    color: white;
+}
