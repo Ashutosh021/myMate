@@ -16,7 +16,7 @@ app.use(cookieParser());
 // app.use(cors());
  
 app.use(cors({
-    origin: process.env.FRONTEND_URL || process.env.FRONTEND_URL_LOCAL, // frontend address
+    origin: process.env.FRONTEND_URL, // frontend address
     credentials: true // Allow cookies to be sent
   }));  
 
