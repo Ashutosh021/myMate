@@ -14,7 +14,7 @@ import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 
-import Profile from "./Components/UserProfile/profile/profile";
+import Profile from "./Components/UserProfile/Profile/Profile";
 import About from "./Components/UserProfile/About/About";
 import UserPost from "./Components/UserProfile/UserPost/UserPost";
 import Education from "./Components/UserProfile/Education/Education";
