@@ -15,7 +15,6 @@ const Profile = () => {
   const { userId } = useParams(); // Get userId from URL params
   const [userData, setUserData] = useState(null); // Store user data
   const [currentComponent, setCurrentComponent] = useState('About'); // Track the selected component
-  console.log(userId)
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {

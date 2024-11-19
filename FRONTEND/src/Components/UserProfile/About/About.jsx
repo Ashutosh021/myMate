@@ -1,7 +1,6 @@
 import React from 'react';
 
 const AboutPage = ({ user }) => {
-  console.log(user)
   return (
     <div className="about-page">
       <h2>About</h2>

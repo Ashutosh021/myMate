@@ -30,7 +30,7 @@ const Navbar = () => {
       const fetchUserProfile = async () => {
         try {
           const authToken = localStorage.getItem("authToken");
-          const response = await fetch(`http://localhost:5000/api/user/getuser/${storedUserId}`, {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/getuser/${storedUserId}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${authToken}`,
