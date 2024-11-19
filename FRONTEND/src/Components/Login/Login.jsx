@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './login.css';
 import { NavLink } from 'react-router-dom';
 import logo from "/logo.png";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   useEffect(() => {
@@ -9,11 +11,11 @@ const Login = () => {
   }, []);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -25,20 +27,30 @@ const Login = () => {
         body: JSON.stringify(formData),
         credentials: 'omit', // Important for sending cookies
       });
+
       const data = await response.json();
-      if (data.success) {
+
+      if (!response.ok) {
+        // Show error toast
+        toast.error(data.message || "Failed to login. Please try again.");
+      } else if (data.success) {
+        toast.success("Login successful!");
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         setFormData({ email: '', password: '' });
-        window.location.href = '/feed'; // Redirect to home page on success
+        setTimeout(() => {
+          window.location.href = '/feed'; // Redirect to home page on success
+        }, 1500); // Add slight delay to allow toast display
       }
     } catch (error) {
-      setMessage('Error: ' + error.message);
+      toast.error('Error: ' + error.message);
     }
   };
- 
+
   return (
     <main>
+      {/* Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className='login-container'>
         <div className='login-left'>
           <img src={logo} className='logo' alt="logo" />

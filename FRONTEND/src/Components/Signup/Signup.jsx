@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import './signup.css';
+import React, { useState, useEffect } from "react";
+import "./signup.css";
 import logo from "/logo.png";
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
   useEffect(() => {
@@ -9,19 +11,16 @@ const SignUp = () => {
   }, []);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    profilePic: null,  // Add a state to hold the file
+    name: "",
+    email: "",
+    password: "",
+    profilePic: null,
   });
-
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle file input change
   const handleFileChange = (e) => {
     setFormData({ ...formData, profilePic: e.target.files[0] });
   };
@@ -29,39 +28,46 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formDataToSend = new FormData();
-    
-    // Append regular form data
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('password', formData.password);
-  
-    // Append the profile pic (if it exists)
+
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+
     if (formData.profilePic) {
-      formDataToSend.append('profilePic', formData.profilePic);
+      formDataToSend.append("profilePic", formData.profilePic);
     }
-  
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
-        method: 'POST',
-        body: formDataToSend,  // Don't set Content-Type manually
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
       const data = await response.json();
+
       if (data.success) {
+        toast.success("Account created successfully!");
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
-        setFormData({ name: '', email: '', password: '', profilePic: null });
-        window.location.href = '/feed';
+        setFormData({ name: "", email: "", password: "", profilePic: null });
+        setTimeout(() => {
+          window.location.href = "/feed";
+        }, 1500);
       } else {
-        setMessage(data.message);
+        toast.error(data.message || "Signup failed. Please try again.");
       }
     } catch (error) {
-      setMessage('Error: ' + error.message);
+      toast.error("Error: " + error.message);
     }
   };
-  
 
   return (
     <main>
+      {/* Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="signup-container">
         <div className="signup-left">
           <img src={logo} className="logo" alt="Logo" />
@@ -101,17 +107,23 @@ const SignUp = () => {
               />
             </div>
             <div className="input-group">
-            <label style={{"textAlign":"left","color":"white","font":"20px"}}>Profile Pic</label>
+              <label
+                style={{ textAlign: "left", color: "white", fontSize: "20px" }}
+              >
+                Profile Pic
+              </label>
               <input
+                required
                 type="file"
                 name="profilePic"
                 className="form-input"
                 onChange={handleFileChange}
               />
             </div>
-            <button type="submit" className="btn btn-primary">Sign Up</button>
+            <button type="submit" className="btn btn-primary">
+              Sign Up
+            </button>
           </form>
-          {message && <p className="message">{message}</p>}
         </div>
         <div className="signup-right">
           <h2>Already Have an Account?</h2>
