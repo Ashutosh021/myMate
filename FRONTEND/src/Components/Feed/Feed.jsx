@@ -11,7 +11,9 @@ const Feed = () => {
   return (
     <div className="home-page">
       <div className="home-body">
+        <div className="sidebarcontainer1">
         <Sidebar />
+        </div>
         <PostFeed />
         <ChatPanel />
       </div>

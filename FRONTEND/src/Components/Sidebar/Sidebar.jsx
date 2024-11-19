@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const [followingUsers, setFollowingUsers] = useState([]);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        const response = await fetch('http://localhost:5000/api/user/profile', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`, // Set the Authorization header
+            Authorization: `Bearer ${authToken}`,
           },
         });
         const data = await response.json();
-
-        // Accessing the 'following' data from the 'user' object
+        
         if (data.user && data.user.following) {
-          setFollowingUsers(data.user.following); 
+          setFollowingUsers(data.user.following);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -30,10 +29,10 @@ const Sidebar = () => {
     fetchUserProfile();
   }, []);
 
-  // Function to navigate to the user's profile page when their name or image is clicked
   const handleUserClick = (userId) => {
-    navigate(`/api/user/getuser/${userId}`);
+    navigate(`/user_profile/${userId}`);
   };
+  
 
   return (
     <div className="sidebar">
@@ -43,12 +42,17 @@ const Sidebar = () => {
       ) : (
         followingUsers.map((user) => (
           <div key={user._id} className="sidebar-user" onClick={() => handleUserClick(user._id)}>
-            <img 
-              src={user.profilePic || '/default-avatar.png'} 
-              alt={user.name} 
-              className="sidebar-avatar" 
+            <img
+              src={user.profilePic || '/default-avatar.png'}
+              alt={user.name}
+              className="sidebar-avatar"
             />
-            <span>{user.name}</span>
+            <div className="sidebar-user-info">
+              <span>{user.name}</span>
+              <p className="sidebar-user-details">
+                Followers: {user.followers?.length || 0} <br></br> Skills: {user.skills?.join(", ") || "Not Provided"}
+              </p>
+            </div>
           </div>
         ))
       )}

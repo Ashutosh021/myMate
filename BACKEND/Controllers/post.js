@@ -6,32 +6,62 @@ const fs = require("fs");
 // Create Post
 exports.createPost = async (req, res) => {
   const { content } = req.body;
-  const userId = req.user?._id;
+  const userId = req.user?._id; // Get user ID from the request user object (assuming the user is authenticated)
 
   try {
-    const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-      folder: "myMate-Posts",
-      resource_type: "auto",
-    });
+    let mediaUrl = '';
+    let mediaPublicId = '';
 
+    // Check if a file is uploaded
+    if (req.file) {
+      // Upload file to Cloudinary if file is present
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "myMate-Posts", // Folder name in Cloudinary
+        resource_type: "auto",  // Automatically detect resource type (image, video, etc.)
+      });
+
+      // Save Cloudinary URL and public ID for the uploaded file
+      mediaUrl = uploadResult.secure_url;
+      mediaPublicId = uploadResult.public_id;
+
+      // Delete the file from the server after uploading to Cloudinary
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error("File deletion error:", err);
+      });
+    }
+
+    // Create a new post (with or without media)
     const post = new Post({
       author: userId,
       content,
-      media: uploadResult.secure_url,
-      mediaPublicId: uploadResult.public_id
+      media: mediaUrl, // Will be an empty string if no media is uploaded
+      mediaPublicId: mediaPublicId, // Will be empty if no media is uploaded
     });
+
+    // Save the post to the database
     await post.save();
 
-    fs.unlink(req.file.path, (err) => {
-      if (err) console.error("File deletion error:", err);
-    });
+    // Find the user and add the post ID to their posts array
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    // Add the post ID to the user's posts array
+    user.posts.push(post._id);
+
+    // Save the user document with the new post reference
+    await user.save();
+
+    // Respond with the newly created post
     res.status(201).json(post);
+
   } catch (err) {
     console.error("Error creating post:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 //get all post or feed
 exports.feed = async (req, res) => {

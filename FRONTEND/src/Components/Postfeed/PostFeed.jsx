@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import './PostFeed.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import "./PostFeed.css";
 import CreatePost from "../CreatePost/PostForm";
+import { FaHeart, FaShare, FaRegBookmark } from "react-icons/fa";
 
 const PostFeed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize the navigate hook
 
   // Fetch posts from the backend API
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        const response = await fetch('http://localhost:5000/api/posts/feed', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/posts/feed`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
@@ -28,7 +31,7 @@ const PostFeed = () => {
         }
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error("Error fetching posts:", error);
         setLoading(false);
       }
     };
@@ -41,6 +44,11 @@ const PostFeed = () => {
     setPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
+  // Profile click handler to navigate to the user's profile page
+  const handleProfileClick = (userId) => {
+    navigate(`/user_profile/${userId}`); // Navigate to the user's profile page
+  };
+
   return (
     <div className="post-feed">
       {/* Pass handlePostCreated to CreatePost */}
@@ -49,57 +57,79 @@ const PostFeed = () => {
       {/* Loading Indicator */}
       {loading ? (
         <p>Loading posts...</p>
+      ) : posts.length === 0 ? (
+        <p>No posts available.</p> // Show a message when there are no posts
       ) : (
-        posts.map((post) => (
-          <div key={post._id} className="post">
-            {/* Post Header */}
-            <div className="post-header">
-              <img src={post.author.profilePic} alt="Author" className="post-avatar" />
-              <div>
-                <p className="post-author">
-                  {post.author.name || "Unknown Author"}
-                </p>
-                <p className="post-created-at">{new Date(post.createdAt).toLocaleString()}</p>
+        posts
+          .filter((post) => post.media && post.media.length > 0) // Filter out posts without media
+          .map((post) => (
+            <div key={post._id} className="post">
+              {/* Post Header */}
+              <div className="post-header">
+                <img
+                  src={post.author.profilePic || "defaultProfilePic.jpg"}
+                  alt="Author"
+                  className="post-avatar"
+                  onClick={() => handleProfileClick(post.author._id)} // Handle profile click
+                />
+                <div>
+                  <p
+                    className="post-author"
+                    onClick={() => handleProfileClick(post.author._id)} // Also clickable by author name
+                  >
+                    {post.author.name || "Unknown Author"}
+                  </p>
+                  <p className="post-created-at">
+                    {new Date(post.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Post Content */}
+              <p className="post-content">{post.content}</p>
+
+              {/* Post Media */}
+              {post.media && post.media.length > 0 ? (
+                <img
+                  src={post.media[0]}
+                  className="post-media"
+                />
+              ) : null}
+
+              {/* Post Actions */}
+              <div className="post-actions">
+                <span>
+                  <FaHeart className="icon-heart" /> {post.likes.length} Likes
+                </span>
+                <span>
+                  <FaShare className="icon-share" /> {post.shares.length} Shares
+                </span>
+                <span>
+                  <FaRegBookmark className="icon-save" /> {post.savedBy.length}{" "}
+                  Saves
+                </span>
+              </div>
+
+              {/* Comments Section */}
+              <div className="post-comments">
+                <h4>Comments</h4>
+                {post.comments.length > 0 ? (
+                  post.comments.map((comment, index) => (
+                    <div key={index} className="comment">
+                      <p>
+                        <strong>User:</strong> {comment.text}
+                      </p>
+                      <p className="comment-date">
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No comments yet</p>
+                )}
               </div>
             </div>
-
-            {/* Post Content */}
-            <p className="post-content">{post.content}</p>
-
-            {/* Post Media */}
-            {post.media?.length > 0 && (
-              <img src={post.media[0]} alt="Post Media" className="post-media" />
-            )}
-
-            {/* Post Actions */}
-            <div className="post-actions">
-              <span>
-                <i className="icon-heart">❤️</i> {post.likes.length} Likes
-              </span>
-              <span>
-                <i className="icon-share">🔄</i> {post.shares.length} Shares
-              </span>
-              <span>
-                <i className="icon-save">🔖</i> {post.savedBy.length} Saves
-              </span>
-            </div>
-
-            {/* Comments Section */}
-            <div className="post-comments">
-              <h4>Comments</h4>
-              {post.comments.length > 0 ? (
-                post.comments.map((comment, index) => (
-                  <div key={index} className="comment">
-                    <p><strong>User:</strong> {comment.text}</p>
-                    <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No comments yet</p>
-              )}
-            </div>
-          </div>
-        ))
+          ))
       )}
     </div>
   );

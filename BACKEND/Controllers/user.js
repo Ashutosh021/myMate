@@ -93,7 +93,9 @@ const GetUser = async (req, res) => {
   }
 
   try {
-    const user = await userSchema.findOne({ _id: userId });
+    const user = await userSchema.findOne({ _id: userId }).populate('followers') 
+    .populate('following')  
+    .populate('posts');
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });

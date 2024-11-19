@@ -12,9 +12,9 @@
 
 /* Chat Panel */
 .chat-panel {
-  width: 320px;
+  /* width: 320px; */
   padding: 10px;
-  height: 400px;
+  height: 600px;
   border-left: 1px solid #ccc;
 }
 

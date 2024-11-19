@@ -14,11 +14,23 @@ import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 
+import Profile from "./Components/UserProfile/profile/profile";
+import About from "./Components/UserProfile/About/About";
+import UserPost from "./Components/UserProfile/UserPost/UserPost";
+import Education from "./Components/UserProfile/Education/Education";
+import Followers from "./Components/UserProfile/Followers/Followers"
+import Followings from "./Components/UserProfile/Following/Following";
+import Projects from "./Components/UserProfile/Followers/Followers";
+import WebLinks from "./Components/UserProfile/WebLinks/WebLink"
+
+
+
 function App() {
   return (
     <Router>
       <NavbarRender />
       <Routes>
+        {/* Main Routes */}
         <Route path="/" element={<Home />} />
         <Route
           path="/feed"
@@ -28,10 +40,69 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/infuture" element={<Future/>}/>
+        <Route path="/infuture" element={<Future />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
 
+        {/* Profile Routes */}
+        <Route path="/user_profile/:userId" element={<Profile />}>
+          <Route
+            path="about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="education"
+            element={
+              <ProtectedRoute>
+                <Education />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="projects"
+            element={
+              <ProtectedRoute>
+                <Projects />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="posts"
+            element={
+              <ProtectedRoute>
+                <UserPost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="followers"
+            element={
+              <ProtectedRoute>
+                <Followers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="following"
+            element={
+              <ProtectedRoute>
+                <Followings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="weblinks"
+            element={
+              <ProtectedRoute>
+                <WebLinks />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
       </Routes>
       <FooterRender />
     </Router>
@@ -40,24 +111,14 @@ function App() {
 
 function NavbarRender() {
   const location = useLocation();
-  return (
-    <>
-      {location.pathname !== "/signup" && location.pathname !== "/login" && (
-        <Navbar />
-      )}
-    </>
-  );
+  // The Navbar should not be rendered on signup or login pages
+  return location.pathname !== "/signup" && location.pathname !== "/login" && location.pathname !== "/" ? <Navbar /> : null;
 }
 
 function FooterRender() {
   const location = useLocation();
-  return (
-    <>
-      {location.pathname !== "/signup" && location.pathname !== "/login" && (
-        <Footer />
-      )}
-    </>
-  );
+  // The Footer should not be rendered on signup or login pages
+  return location.pathname !== "/signup" && location.pathname !== "/login" && location.pathname !== "/" ? <Footer /> : null;
 }
 
 export default App;

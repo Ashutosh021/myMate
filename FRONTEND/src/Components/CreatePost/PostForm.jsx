@@ -1,83 +1,102 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 import axios from "axios";
 import "./PostForm.css";
 
-function PostForm({ userId, onPostCreated }) {
+function PostForm({ onPostCreated }) {
   const [user, setUser] = useState({
     profilePhoto: "defaultProfilePhotoUrl.jpg",
     name: "Anonymous",
   });
   const [postContent, setPostContent] = useState('');
-  const [media, setMedia] = useState(null); // Single file, not an array
-  const [mediaPreview, setMediaPreview] = useState(null); // Single preview
+  const [media, setMedia] = useState(null); // Single file upload (optional)
+  const [mediaPreview, setMediaPreview] = useState(null); // Preview of uploaded media
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState(null); // State to store user ID
+  const navigate = useNavigate(); 
 
-  // Fetch user data on mount
+  // Fetch user data when the component mounts
   useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true); // Set loading to true when fetching data
-      try {
-        const authToken = localStorage.getItem("authToken");
-        const response = await axios.get('http://localhost:5000/api/user/profile', {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setUser({
-          profilePhoto: response.data.user.profilePic,
-          name: response.data.user.name,
-        });
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false); // Set loading to false when request is done
-      }
-    };
-    fetchUser();
-  }, [userId]);
+    const storedUserId = localStorage.getItem("userId"); // Get userId from localStorage
+    if (storedUserId) {
+      setUserId(storedUserId); // Set the userId in state
 
-  // Handle content change
+      const fetchUser = async () => {
+        setLoading(true);
+        try {
+          const authToken = localStorage.getItem("authToken");
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/getuser/${storedUserId}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+
+          setUser({
+            profilePhoto: response.data.user.profilePic || "defaultProfilePhotoUrl.jpg", 
+            name: response.data.user.name || "Anonymous",
+          });
+
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUser();
+    } else {
+      console.log("No userId found in localStorage");
+    }
+  }, []);
+
+  // Navigate to user profile page
+  const handleProfileClick = () => {
+    if (userId) {
+      navigate(`/user_profile/${userId}`);  // Navigate to the user's profile
+    }
+  };
+
+  // Handle content change (post text)
   const handleContentChange = (e) => {
     setPostContent(e.target.value);
   };
 
-  // Handle media upload (only one file)
+  // Handle media (image/video) selection
   const handleMediaChange = (e) => {
-    const file = e.target.files[0]; // Get the first selected file
-    setMedia(file); // Store the file in state
+    const file = e.target.files[0]; // Only handle one file
+    setMedia(file);
 
-    // Generate media preview
+    // Generate preview for the selected media
     const preview = URL.createObjectURL(file);
-    setMediaPreview(preview); // Update preview for a single file
+    setMediaPreview(preview);
   };
 
-  // Reset form fields
+  // Reset the form
   const resetForm = () => {
     setPostContent('');
-    setMedia(null); // Reset the media
-    if (mediaPreview) URL.revokeObjectURL(mediaPreview); // Release memory for preview
-    setMediaPreview(null); // Reset preview
+    setMedia(null); 
+    if (mediaPreview) URL.revokeObjectURL(mediaPreview); // Clean up preview memory
+    setMediaPreview(null);
   };
 
-  // Handle form submission
+  // Handle form submission (post creation)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("content", postContent);
-    if (media) formData.append("post-pic", media); // Attach the single file
+    formData.append("content", postContent);  // Always append the post content
+    if (media) formData.append("post-pic", media); // Only append media if it exists
 
     setLoading(true);
 
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch('http://localhost:5000/api/posts/create', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/posts/create`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
-        body: formData, // Send FormData directly
+        body: formData, // Sending the FormData containing content and possibly media
       });
 
       if (!response.ok) {
@@ -87,34 +106,32 @@ function PostForm({ userId, onPostCreated }) {
       const data = await response.json();
       console.log("Post created successfully:", data);
 
-      // Call the onPostCreated callback with the new post data
+      // Pass created post data to parent component (if onPostCreated is provided)
       if (onPostCreated) {
         onPostCreated(data);
       }
 
-      // Reset form after successful submission
+      // Reset form after successful post creation
       resetForm();
     } catch (error) {
       console.error("Error creating post:", error);
     } finally {
-      setLoading(false); // Reset loading state after request is finished
+      setLoading(false);
     }
   };
 
   return (
     <div className="main-container">
       <div className="post-form-container">
-        {loading && <p>Loading...</p>} {/* Show loading text when fetching user or posting */}
+        {loading && <p>Loading...</p>} {/* Show loading text when submitting or fetching */}
 
-        <div className="post-author">
-          <img
-            src={user.profilePhoto}
-            alt="Profile"
-            className="profile-photo"
-          />
+        {/* User profile section */}
+        <div className="post-author" onClick={handleProfileClick} style={{ cursor: "pointer" }}>
+          <img src={user.profilePhoto} alt="Profile" className="profile-photo" />
           <h3>{user.name}</h3>
         </div>
 
+        {/* Post form */}
         <form onSubmit={handleSubmit}>
           <textarea
             placeholder="What's on your mind?"
@@ -124,31 +141,31 @@ function PostForm({ userId, onPostCreated }) {
             required
           ></textarea>
 
+          {/* File input for media upload */}
           <label className="media-upload">
             <input
               type="file"
-              accept="image/*,video/*"
+              accept="image/*,video/*" // Allow images and videos
               name="post-pic"
               onChange={handleMediaChange}
             />
-            <span>Upload Media</span>
+            <span>Upload Media (optional)</span>
           </label>
 
+          {/* Display media preview if available */}
           {mediaPreview && (
             <div className="media-preview">
               <img src={mediaPreview} alt="Preview" />
             </div>
           )}
 
+          {/* Submit button */}
           <button type="submit" className="submit-button" disabled={loading}>
             {loading ? "Posting..." : "Post"}
           </button>
 
-          <button
-            type="button"
-            onClick={resetForm}
-            className="discard-button"
-          >
+          {/* Discard button to reset form */}
+          <button type="button" onClick={resetForm} className="discard-button">
             Discard
           </button>
         </form>
