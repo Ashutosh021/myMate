@@ -110,6 +110,7 @@ const Signup = async (req, res) => {
       success: true,
       message: 'User registered successfully',
       token: token,
+      userId:user._id
     });
   } catch (error) {
     console.error('Signup Error: ', error);
