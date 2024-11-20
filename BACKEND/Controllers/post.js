@@ -154,13 +154,18 @@ exports.deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // Delete the media from Cloudinary
+    // Delete the media from Cloudinary if it exists
     if (post.mediaPublicId) {
-      await cloudinary.uploader.destroy(post.mediaPublicId);
+      try {
+        await cloudinary.uploader.destroy(post.mediaPublicId);
+        console.log("Media deleted from Cloudinary.");
+      } catch (cloudinaryError) {
+        console.error("Error deleting media from Cloudinary:", cloudinaryError);
+      }
     }
 
     // Delete the post from the database
-    await post.remove();
+    await Post.findByIdAndDelete(req.params.postId);
 
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
@@ -170,6 +175,8 @@ exports.deletePost = async (req, res) => {
       .json({ message: "Error deleting post", error: err.message });
   }
 };
+
+
 
 // Like Post
 exports.likePost = async (req, res) => {

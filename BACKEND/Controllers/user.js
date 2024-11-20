@@ -85,6 +85,24 @@ const UpdateProfile = async (req, res) => {
   }
 };
 
+const AllProfile = async (req, res) => {
+  try {
+    // Fetch all users asynchronously
+    const users = await userSchema.find(); 
+
+    // Return the users in the response
+    res.status(200).json({
+      users, // Send the fetched users
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({
+      message: 'Error fetching users.',
+    });
+  }
+};
+
+
 const GetUser = async (req, res) => {
   const userId = req.params.userId;
 
@@ -192,6 +210,7 @@ const Unfollow = async (req, res) => {
 
 module.exports = {
   Profile,
+  AllProfile,
   UpdateProfile,
   GetUser,
   Follow,

@@ -13,7 +13,6 @@ import Feed from "./Components/Feed/Feed";
 import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
-
 import Profile from "./Components/UserProfile/Profile/Profile";
 import About from "./Components/UserProfile/About/About";
 import UserPost from "./Components/UserProfile/UserPost/UserPost";
@@ -25,7 +24,6 @@ import WebLinks from "./Components/UserProfile/WebLinks/WebLink"
 import UserAgreement from "./Components/AgreementPrivacy/UserAgreement";
 import PrivacyPolicy from "./Components/AgreementPrivacy/PrivacyPolicy";
 import Error from "./Components/Error/Error";
-import Logout from "./Components/Logout/Logout";
 
 
 
@@ -43,12 +41,11 @@ function App() {
               <Feed />
             </ProtectedRoute>
           }
-        />
+        />  
         <Route path="/infuture" element={<Future />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-
+        
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/user-agreement" element={<UserAgreement />} />
 

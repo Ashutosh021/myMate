@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './UserPost.css'; // Assuming you have this CSS file for styling
+import './UserPost.css';
 
 const UserPostPage = () => {
-  const { userId } = useParams(); // Get userId from URL params
-  const [posts, setPosts] = useState([]); // Store posts
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const { userId } = useParams();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deletingPostId, setDeletingPostId] = useState(null); // Track the post being deleted
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
-    // Fetch posts from the backend
     const fetchPosts = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
@@ -23,14 +24,13 @@ const UserPostPage = () => {
         const data = await response.json();
 
         if (response.ok && data) {
-          // Filter posts by userId
-          const userPosts = await data.filter(post => post.author._id === userId);
+          const userPosts = data.filter((post) => post.author._id === userId);
           setPosts(userPosts);
         } else {
-          setError('Failed to load posts');
+          setError("Failed to load posts");
         }
       } catch (error) {
-        setError('Error fetching posts');
+        setError("Error fetching posts");
       } finally {
         setLoading(false);
       }
@@ -39,7 +39,29 @@ const UserPostPage = () => {
     fetchPosts();
   }, [userId]);
 
-  // Loading or error state
+  const handleDelete = async (postId) => {
+    setDeletingPostId(postId); // Set the post as being deleted
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/posts/delete/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId)); // Remove deleted post from UI
+      } else {
+        console.error("Failed to delete the post");
+      }
+    } catch (error) {
+      console.error("Error while deleting the post:", error);
+    } finally {
+      setDeletingPostId(null); // Reset the post deletion state
+    }
+  };
+
   if (loading) {
     return <p className="pf-loading">Loading posts...</p>;
   }
@@ -47,18 +69,6 @@ const UserPostPage = () => {
   if (error) {
     return <p className="pf-error">{error}</p>;
   }
-
-  // Handle edit post
-  const handleEdit = (postId) => {
-    // Logic for editing the post, e.g., open a modal or redirect to an edit page
-    console.log(`Edit post with ID: ${postId}`);
-  };
-
-  // Handle delete post
-  const handleDelete = (postId) => {
-    // Logic for deleting the post, e.g., show confirmation dialog
-    console.log(`Delete post with ID: ${postId}`);
-  };
 
   return (
     <div className="pf-user-posts">
@@ -72,10 +82,21 @@ const UserPostPage = () => {
                 <img src={post.media[0]} alt="post media" className="pf-post-image" />
               )}
             </div>
-            <div className="pf-post-buttons">
-              <button onClick={() => handleEdit(post._id)} className="pf-edit-btn">Edit</button>
-              <button onClick={() => handleDelete(post._id)} className="pf-delete-btn">Delete</button>
-            </div>
+            {currentUserId === post.author._id && (
+              <div className="pf-post-buttons">
+                {deletingPostId === post._id ? (
+                  <p className="pf-deleting">Deleting...</p> // Show deleting message for the specific post
+                ) : (
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    className="pf-delete-btn"
+                    disabled={deletingPostId === post._id} // Disable button while deleting
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ))
       ) : (

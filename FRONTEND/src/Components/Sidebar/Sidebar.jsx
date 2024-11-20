@@ -3,44 +3,67 @@ import { useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const [followingUsers, setFollowingUsers] = useState([]);
+  const [allUser, setAllUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
   const navigate = useNavigate();
+  const loggedInUserId = localStorage.getItem("userId"); // Get logged-in user ID from localStorage
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchAllUsers = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile/all`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
           },
         });
         const data = await response.json();
-        
-        if (data.user && data.user.following) {
-          setFollowingUsers(data.user.following);
+        console.log("Fetched Users:", data); // Check the data in the console
+
+        // Update the state with the fetched users, excluding the logged-in user
+        if (data.users) {
+          const filteredUsers = data.users.filter(user => user._id !== loggedInUserId);
+          setAllUsers(filteredUsers); // Set filtered users in the state
         }
       } catch (error) {
-        console.error('Error fetching profile data:', error);
+        console.error('Error fetching users:', error);
       }
     };
 
-    fetchUserProfile();
-  }, []);
+    fetchAllUsers();
+  }, [loggedInUserId]); // Re-run when loggedInUserId changes
 
   const handleUserClick = (userId) => {
     navigate(`/user_profile/${userId}`);
   };
-  
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value.toLowerCase()); // Update search query
+  };
+
+  // Filter users based on the search query
+  const filteredUsers = allUser.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery)
+  );
 
   return (
     <div className="sidebar">
-      <h3>Your Network</h3>
-      {followingUsers.length === 0 ? (
-        <p>You don't follow anyone</p>
+      <h3>Meet the Network</h3>
+
+      {/* Search Box */}
+      <input
+        type="text"
+        placeholder="Search users by name..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+        className="search-box"
+      />
+
+      {filteredUsers.length === 0 ? (
+        <p>No users found</p>
       ) : (
-        followingUsers.map((user) => (
+        filteredUsers.map((user) => (
           <div key={user._id} className="sidebar-user" onClick={() => handleUserClick(user._id)}>
             <img
               src={user.profilePic || '/default-avatar.png'}
@@ -50,7 +73,7 @@ const Sidebar = () => {
             <div className="sidebar-user-info">
               <span>{user.name}</span>
               <p className="sidebar-user-details">
-                Followers: {user.followers?.length || 0} <br></br> Skills: {user.skills?.join(", ") || "Not Provided"}
+                Followers: {user.followers?.length || 0} <br />
               </p>
             </div>
           </div>
