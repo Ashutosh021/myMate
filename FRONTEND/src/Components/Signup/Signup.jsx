@@ -16,6 +16,7 @@ const SignUp = () => {
     password: "",
     profilePic: null,
   });
+  const [loading, setLoading] = useState(false); // State for loading indicator
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,8 +28,9 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
+    setLoading(true); // Start loading
 
+    const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("password", formData.password);
@@ -47,6 +49,7 @@ const SignUp = () => {
       );
 
       const data = await response.json();
+      setLoading(false); // Stop loading after response
 
       if (data.success) {
         toast.success("Account created successfully!");
@@ -60,6 +63,7 @@ const SignUp = () => {
         toast.error(data.message || "Signup failed. Please try again.");
       }
     } catch (error) {
+      setLoading(false); // Stop loading on error
       toast.error("Error: " + error.message);
     }
   };
@@ -82,6 +86,7 @@ const SignUp = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                disabled={loading} // Disable input when loading
               />
             </div>
             <div className="input-group">
@@ -93,6 +98,7 @@ const SignUp = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={loading} // Disable input when loading
               />
             </div>
             <div className="input-group">
@@ -104,6 +110,7 @@ const SignUp = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading} // Disable input when loading
               />
             </div>
             <div className="input-group">
@@ -118,10 +125,11 @@ const SignUp = () => {
                 name="profilePic"
                 className="form-input"
                 onChange={handleFileChange}
+                disabled={loading} // Disable input when loading
               />
             </div>
-            <button type="submit" className="btn btn-primary">
-              Sign Up
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? "Signing up..." : "Sign Up"}
             </button>
           </form>
         </div>
@@ -129,7 +137,9 @@ const SignUp = () => {
           <h2>Already Have an Account?</h2>
           <p>Log in to explore more features.</p>
           <NavLink to="/login">
-            <button className="btn btn-secondary">Log In</button>
+            <button className="btn btn-secondary" disabled={loading}>
+              Log In
+            </button>
           </NavLink>
         </div>
       </div>

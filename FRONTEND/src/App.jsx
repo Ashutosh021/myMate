@@ -22,6 +22,10 @@ import Followers from "./Components/UserProfile/Followers/Followers"
 import Followings from "./Components/UserProfile/Following/Following";
 import Projects from "./Components/UserProfile/Followers/Followers";
 import WebLinks from "./Components/UserProfile/WebLinks/WebLink"
+import UserAgreement from "./Components/AgreementPrivacy/UserAgreement";
+import PrivacyPolicy from "./Components/AgreementPrivacy/PrivacyPolicy";
+import Error from "./Components/Error/Error";
+import Logout from "./Components/Logout/Logout";
 
 
 
@@ -43,6 +47,10 @@ function App() {
         <Route path="/infuture" element={<Future />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/user-agreement" element={<UserAgreement />} />
 
         {/* Profile Routes */}
         <Route path="/user_profile/:userId" element={<Profile />}>
@@ -103,6 +111,7 @@ function App() {
             }
           />
         </Route>
+        <Route path="*" element={<Error/>}/>
       </Routes>
       <FooterRender />
     </Router>

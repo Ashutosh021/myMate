@@ -13,15 +13,14 @@ const Home = () => {
             <button className="google-signin">Continue with Google</button>
           </NavLink>
           <NavLink to={"./login"}>
-            <button className="email-signin">Signup / Login with email</button>
+            <button className="email-signin">Login with email</button>
           </NavLink>
           <p>
             By clicking Continue, you agree to MyMate{" "}
-            <a href="#">User Agreement</a>, <a href="#">Privacy Policy</a>, and{" "}
-            <a href="#">Cookie Policy</a>.
+            <a href="/user-agreement">User Agreement</a>, <a href="/privacy-policy">Privacy Policy</a>
           </p>
           <p>
-            New to MyMate? <a href="#">Join now</a>
+            New to MyMate? <a href="/signup">Join now</a>
           </p>
         </div>
         <div className="right-section">

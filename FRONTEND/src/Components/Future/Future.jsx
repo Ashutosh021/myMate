@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import './Future.css';
 
 const Future = () => {
     useEffect(() => {
@@ -6,9 +7,9 @@ const Future = () => {
     }, []); 
 
     return (
-        <>
+        <div className="future-container">
             <h1>Not Implemented Yet || Coming Soon...</h1>
-        </>
+        </div>
     );
 };
 

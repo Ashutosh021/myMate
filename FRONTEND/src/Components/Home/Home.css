@@ -7,7 +7,6 @@
   margin: 0;
   font-family: 'Roboto', sans-serif;
   padding: 0 20px;
-  /* background: linear-gradient(135deg, #00bcd4, #8e24aa); */
   color: #fff;
   animation: fadeIn 1.5s ease-in-out;
 }
@@ -27,7 +26,6 @@
   animation: slideUp 1s ease-in-out;
 }
 
-/* Left section for text and form */
 .left-section {
   padding: 40px;
   max-width: 500px;
@@ -58,7 +56,6 @@
   color: #8e24aa;
 }
 
-/* Buttons styles */
 .google-signin,
 .email-signin {
   display: block;
@@ -98,7 +95,6 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Right section for the logo */
 .right-section {
   height: 100vh;
   width: 100vw;
@@ -124,10 +120,9 @@
   background-image: linear-gradient(45deg, #00bcd4, #8e24aa);
   background-origin: border-box;
   background-clip: content-box, border-box;
-  animation: gradientBorder 5s linear infinite; /* Continuous border gradient animation */
+  animation: gradientBorder 5s linear infinite;
 }
 
-/* Styling for the logo text */
 .logo-line {
   font-size: 50px;
   font-weight: 700;
@@ -143,8 +138,6 @@
   color: white;
 }
 
-
-/* Hover effect for the logo text */
 .logo:hover .logo-line {
   transform: scale(1.1);
 }
@@ -155,6 +148,70 @@
 
 .logo:hover .logo-line:last-child {
   color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mymate-main {
+    flex-direction: column;
+    max-width: 90%;
+    margin: 0 auto;
+    border-radius: 8px;
+  }
+
+  .left-section {
+    padding: 20px;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .left-section h1 {
+    font-size: 2rem;
+  }
+
+  .left-section p {
+    font-size: 0.9rem;
+  }
+
+  .right-section {
+    height: auto;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .logo {
+    width: 250px;
+    height: 250px;
+  }
+
+  .logo-line {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .left-section p {
+    font-size: 0.8rem;
+  }
+
+  .google-signin,
+  .email-signin {
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  .logo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .logo-line {
+    font-size: 35px;
+  }
 }
 
 /* Continuous gradient animation for the logo border */
@@ -173,55 +230,5 @@
   }
   100% {
     background-image: linear-gradient(45deg, #00bcd4, #8e24aa);
-  }
-}
-
-/* Keyframes for page entrance animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInLeft {
-  from {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes upDown {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
   }
 }

@@ -11,6 +11,7 @@ const Login = () => {
   }, []);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false); // State for loading indicator
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,6 +19,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
         method: 'POST',
@@ -29,6 +31,7 @@ const Login = () => {
       });
 
       const data = await response.json();
+      setLoading(false); // Stop loading after response
 
       if (!response.ok) {
         // Show error toast
@@ -43,6 +46,7 @@ const Login = () => {
         }, 1500); // Add slight delay to allow toast display
       }
     } catch (error) {
+      setLoading(false); // Stop loading on error
       toast.error('Error: ' + error.message);
     }
   };
@@ -65,6 +69,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={loading} // Disable input when loading
               />
             </div>
             <div className='input-group'>
@@ -76,16 +81,21 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading} // Disable input when loading
               />
             </div>
-            <button type='submit' className="btn btn-primary">Login</button>
+            <button type='submit' className="btn btn-primary" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
           </form>
         </div>
         <div className='login-right'>
           <h2>New Here?</h2>
           <p>Sign up and discover a great amount of new opportunities.</p>
           <NavLink to="/signup">
-            <button className="btn btn-secondary">Sign Up</button>
+            <button className="btn btn-secondary" disabled={loading}>
+              Sign Up
+            </button>
           </NavLink>
         </div>
       </div>
