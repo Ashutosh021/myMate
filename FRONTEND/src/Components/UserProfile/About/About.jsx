@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import './About.css'
+import { useParams } from 'react-router-dom'; // if you're using react-router for routing
+import './About.css';
 
 const AboutPage = ({ user }) => {
   const [bio, setBio] = useState(user.bio);
   const [isEditing, setIsEditing] = useState(false);
   const [newBio, setNewBio] = useState(bio);
+  const { userId } = useParams(); // to get userId from URL params if available
+
+  const currentUserId = localStorage.getItem("userId"); // current logged-in user ID
 
   // Toggle editing mode
   const handleEditToggle = () => {
@@ -48,6 +52,9 @@ const AboutPage = ({ user }) => {
     setNewBio(bio);  // Reset the bio to the latest when user switches back from editing
   }, [bio]);
 
+  // Check if the logged-in user is viewing their own profile
+  const isCurrentUserProfile = currentUserId === (userId || user._id);
+
   return (
     <div className="about-page">
       <h2>About</h2>
@@ -71,7 +78,9 @@ const AboutPage = ({ user }) => {
         ) : (
           <div>
             <p>{bio}</p>
-            <button onClick={handleEditToggle} className="edit">Edit Bio</button>
+            {isCurrentUserProfile && (
+              <button onClick={handleEditToggle} className="edit">Edit Bio</button>
+            )}
           </div>
         )}
       </div>
