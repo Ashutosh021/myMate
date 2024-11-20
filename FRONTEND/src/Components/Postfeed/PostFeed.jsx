@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import "./PostFeed.css";
 import CreatePost from "../CreatePost/PostForm";
 import { FaHeart, FaShare, FaRegBookmark } from "react-icons/fa";
@@ -7,7 +7,7 @@ import { FaHeart, FaShare, FaRegBookmark } from "react-icons/fa";
 const PostFeed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize the navigate hook
+  const navigate = useNavigate();
 
   // Fetch posts from the backend API
   useEffect(() => {
@@ -21,6 +21,7 @@ const PostFeed = () => {
           },
         });
         const data = await response.json();
+        console.log(data);  // Log the response to verify the structure
 
         if (Array.isArray(data)) {
           setPosts(data);
@@ -46,7 +47,35 @@ const PostFeed = () => {
 
   // Profile click handler to navigate to the user's profile page
   const handleProfileClick = (userId) => {
-    navigate(`/user_profile/${userId}`); // Navigate to the user's profile page
+    navigate(`/user_profile/${userId}`);
+  };
+
+  // Like a post
+  const handleLikePost = async (postId) => {
+    const userId = localStorage.getItem("userId");
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/posts/like/${postId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ postId, userId }),  // Ensure userId is passed correctly
+      });
+
+      const updatedPost = await response.json();
+
+      if (updatedPost) {
+        // Update only the like count
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post._id === updatedPost._id ? { ...post, likes: updatedPost.likes } : post
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
   };
 
   return (
@@ -77,7 +106,7 @@ const PostFeed = () => {
                     className="post-author"
                     onClick={() => handleProfileClick(post.author._id)} // Also clickable by author name
                   >
-                    {post.author.name || "Unknown Author"}
+                    {post.author?.name || "Unknown Author"}
                   </p>
                   <p className="post-created-at">
                     {new Date(post.createdAt).toLocaleString()}
@@ -90,23 +119,19 @@ const PostFeed = () => {
 
               {/* Post Media */}
               {post.media && post.media.length > 0 ? (
-                <img
-                  src={post.media[0]}
-                  className="post-media"
-                />
+                <img src={post.media[0]} className="post-media" />
               ) : null}
 
               {/* Post Actions */}
               <div className="post-actions">
-                <span>
+                <span onClick={() => handleLikePost(post._id)}>
                   <FaHeart className="icon-heart" /> {post.likes.length} Likes
                 </span>
                 <span>
                   <FaShare className="icon-share" /> {post.shares.length} Shares
                 </span>
                 <span>
-                  <FaRegBookmark className="icon-save" /> {post.savedBy.length}{" "}
-                  Saves
+                  <FaRegBookmark className="icon-save" /> {post.savedBy.length} Saves
                 </span>
               </div>
 

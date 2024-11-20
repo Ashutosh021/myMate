@@ -12,6 +12,7 @@ import Login from "./Components/Login/Login";
 import Feed from "./Components/Feed/Feed";
 import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
+import Network from "./Components/Network/Network"
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import Profile from "./Components/UserProfile/Profile/Profile";
 import About from "./Components/UserProfile/About/About";
@@ -45,7 +46,7 @@ function App() {
         <Route path="/infuture" element={<Future />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        
+        <Route path="/network" element={<Network />}></Route>
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/user-agreement" element={<UserAgreement />} />
 

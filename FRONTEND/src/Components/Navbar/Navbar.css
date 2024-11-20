@@ -14,6 +14,25 @@
   transition: all 0.3s ease; /* Smooth transition for hover effects */
 }
 
+/* Explore Network Button (only visible on small screens) */
+.navbar-explore-network {
+  display: none; /* Hide by default */
+  margin-left: 20px;
+}
+
+.explore-network-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.explore-network-btn:hover {
+  background-color: #0056b3;
+}
+
 /* Logo Section */
 .navbar-logo {
   flex: 0 0 auto;
@@ -118,7 +137,6 @@
   object-fit: cover;
 }
 
-
 .navbar-profile img:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add depth on hover */
@@ -141,6 +159,11 @@
 
 /* Responsive Styling */
 @media (max-width: 768px) {
+  /* Show Explore Network button on small screens */
+  .navbar-explore-network {
+    display: block;
+  }
+
   .navbar-search-icons {
     display: none; /* Hide search and icons on small screens */
   }

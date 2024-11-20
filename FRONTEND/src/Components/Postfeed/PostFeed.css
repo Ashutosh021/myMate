@@ -63,13 +63,10 @@
 }
 
 .post-avatar {
-  width: 60px;    
+  width: 60px;
   height: 60px;
   border-radius: 50%;
   margin-right: 10px;
-}
-
-.post-avatar{
   cursor: pointer;
 }
 
@@ -99,7 +96,8 @@
 
 .post-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  gap: 20px; /* Add space between the icons */
   font-size: 14px;
   color: #555;
   margin-top: 10px;
@@ -109,25 +107,42 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
 }
 
-.post-actions i {
+.post-actions span:hover {
+  transform: scale(1.1); /* Slightly enlarge the icons on hover */
+}
+
+.icon-heart,
+.icon-share,
+.icon-save {
+  font-size: 20px; /* Adjust the icon size */
   margin-right: 5px;
 }
 
 .icon-heart {
   color: #e0245e;
-  font-size: 25px;
+}
+
+.icon-heart:hover {
+  color: #f50057; /* Change color on hover */
 }
 
 .icon-share {
-  font-size: 25px;
   color: #1da1f2;
 }
 
+.icon-share:hover {
+  color: #1d87d3; /* Change color on hover */
+}
+
 .icon-save {
-  font-size: 25px;
   color: #ffc107;
+}
+
+.icon-save:hover {
+  color: #ffb300; /* Change color on hover */
 }
 
 .post-comments {

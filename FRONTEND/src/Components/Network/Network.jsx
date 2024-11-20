@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Sidebar.css';
+import './Network.css';
 
-const Sidebar = () => {
+const Network = () => {
   const [allUser, setAllUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Sidebar = () => {
   );
 
   return (
-    <div className="sidebar">
+    <div className="network">
       <h3>Meet the Network</h3>
 
       {/* Search Box */}
@@ -63,15 +63,15 @@ const Sidebar = () => {
         <p>No users found</p>
       ) : (
         filteredUsers.map((user) => (
-          <div key={user._id} className="sidebar-user" onClick={() => handleUserClick(user._id)}>
+          <div key={user._id} className="network-user" onClick={() => handleUserClick(user._id)}>
             <img
               src={user.profilePic || '/default-avatar.png'}
               alt={user.name}
-              className="sidebar-avatar"
+              className="network-avatar"
             />
-            <div className="sidebar-user-info">
+            <div className="network-user-info">
               <span>{user.name}</span>
-              <p className="sidebar-user-details">
+              <p className="network-user-details">
                 Followers: {user.followers?.length || 0} <br />
               </p>
             </div>
@@ -82,4 +82,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default Network;

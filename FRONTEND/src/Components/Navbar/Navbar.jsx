@@ -81,6 +81,13 @@ const Navbar = () => {
           </div>
         </NavLink>
 
+        {/* Explore Network Button (only visible on small screens) */}
+        <div className="navbar-explore-network">
+          <NavLink to="/network">
+            <button className="explore-network-btn">Explore Network</button>
+          </NavLink>
+        </div>
+
         {/* Search and Icons */}
         <div className="navbar-search-icons">
           <div className="navbar-search">
@@ -105,12 +112,11 @@ const Navbar = () => {
           </div>
 
           <div className="navbar-profile">
-            {/* Profile image with click handler */}
             <img
-              src={profilePic || "/default-profile-pic.jpg"} // Fallback to a default image if profilePic is empty
+              src={profilePic || "/default-profile-pic.jpg"}
               alt="User Profile"
               className="profile-image"
-              onClick={handleUserClick} // Handle the click to navigate to the user profile
+              onClick={handleUserClick}
             />
           </div>
         </div>

@@ -1,11 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import './About.css'
 
 const AboutPage = ({ user }) => {
+  const [bio, setBio] = useState(user.bio);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newBio, setNewBio] = useState(bio);
+
+  // Toggle editing mode
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  // Handle bio change
+  const handleBioChange = (e) => {
+    setNewBio(e.target.value);
+  };
+
+  // Submit bio update
+  const handleBioSubmit = async () => {
+    const authToken = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/profile/edit/bio`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ bio: newBio }),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setBio(updatedUser.user.bio);  // Update the bio displayed
+        setIsEditing(false);  // Exit editing mode
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating bio:", error);
+      alert('An error occurred while updating your bio.');
+    }
+  };
+
+  useEffect(() => {
+    setNewBio(bio);  // Reset the bio to the latest when user switches back from editing
+  }, [bio]);
+
   return (
     <div className="about-page">
       <h2>About</h2>
       <p>{user.email}</p>
-      <p>{user.bio}</p>
+      
+      {/* Bio Box */}
+      <div className="bio-box">
+        {isEditing ? (
+          <div>
+            <textarea
+              value={newBio}
+              onChange={handleBioChange}
+              rows="5"
+              placeholder="Update your bio"
+            />
+            <div className="button-group">
+              <button onClick={handleBioSubmit}>Save</button>
+              <button onClick={handleEditToggle} className="cancel">Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p>{bio}</p>
+            <button onClick={handleEditToggle} className="edit">Edit Bio</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

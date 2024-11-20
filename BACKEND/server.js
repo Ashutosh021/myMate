@@ -29,13 +29,6 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/user',userRoutes);
-app.use('/api/check',isLoggedIn,(req,res)=>{
-  console.log("Done")
-  res.json({
-    'hi':'sfsf'
-  })
-})
-
 
 
 const PORT = process.env.PORT || 5000;
