@@ -8,7 +8,7 @@ const Future = () => {
 
     return (
         <div className="future-container">
-            <h1>Not Implemented Yet || Coming Soon...</h1>
+            <h1>Coming Soon...</h1>
         </div>
     );
 };

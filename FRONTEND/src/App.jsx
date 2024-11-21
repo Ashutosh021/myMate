@@ -12,21 +12,19 @@ import Login from "./Components/Login/Login";
 import Feed from "./Components/Feed/Feed";
 import Home from "./Components/Home/Home";
 import Future from "./Components/Future/Future";
-import Network from "./Components/Network/Network"
+import Network from "./Components/Network/Network";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 import Profile from "./Components/UserProfile/Profile/Profile";
 import About from "./Components/UserProfile/About/About";
 import UserPost from "./Components/UserProfile/UserPost/UserPost";
 import Education from "./Components/UserProfile/Education/Education";
-import Followers from "./Components/UserProfile/Followers/Followers"
+import Followers from "./Components/UserProfile/Followers/Followers";
 import Followings from "./Components/UserProfile/Following/Following";
 import Projects from "./Components/UserProfile/Followers/Followers";
-import WebLinks from "./Components/UserProfile/WebLinks/WebLink"
+import WebLinks from "./Components/UserProfile/WebLinks/WebLink";
 import UserAgreement from "./Components/AgreementPrivacy/UserAgreement";
 import PrivacyPolicy from "./Components/AgreementPrivacy/PrivacyPolicy";
 import Error from "./Components/Error/Error";
-
-
 
 function App() {
   return (
@@ -42,11 +40,18 @@ function App() {
               <Feed />
             </ProtectedRoute>
           }
-        />  
+        />
         <Route path="/infuture" element={<Future />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/network" element={<Network />}></Route>
+        <Route
+          path="/network"
+          element={
+            <ProtectedRoute>
+              <Network />
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/user-agreement" element={<UserAgreement />} />
 
@@ -109,7 +114,7 @@ function App() {
             }
           />
         </Route>
-        <Route path="*" element={<Error/>}/>
+        <Route path="*" element={<Error />} />
       </Routes>
       <FooterRender />
     </Router>
@@ -119,13 +124,21 @@ function App() {
 function NavbarRender() {
   const location = useLocation();
   // The Navbar should not be rendered on signup or login pages
-  return location.pathname !== "/signup" && location.pathname !== "/login" && location.pathname !== "/" ? <Navbar /> : null;
+  return location.pathname !== "/signup" &&
+    location.pathname !== "/login" &&
+    location.pathname !== "/" ? (
+    <Navbar />
+  ) : null;
 }
 
 function FooterRender() {
   const location = useLocation();
   // The Footer should not be rendered on signup or login pages
-  return location.pathname !== "/signup" && location.pathname !== "/login" && location.pathname !== "/" ? <Footer /> : null;
+  return location.pathname !== "/signup" &&
+    location.pathname !== "/login" &&
+    location.pathname !== "/" ? (
+    <Footer />
+  ) : null;
 }
 
 export default App;
