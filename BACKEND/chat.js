@@ -1,33 +1,41 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const cors = require('cors'); 
+const cors = require('cors');
+
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
-app.use(cors());  
-// Serve static files (optional)
-app.use(express.static('public'));
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // Change this for production to allow only specific origins
+    methods: ["GET", "POST"]
+  }
+});
 
-// When a client connects
+app.use(cors());
+
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('A user connected:', socket.id);
 
-  // When a new message is sent
+  // Listen for messages
   socket.on('send_message', (message) => {
     console.log('New message:', message);
-    
-    // Broadcast the message to all clients, including the sender
-    io.emit('receive_message', message); // This will send the message to everyone
+
+    // Broadcast the message to all users
+    io.emit('receive_message', message);
   });
 
-  // When a user disconnects
+  socket.on("typing", ({ senderName }) => {
+    socket.broadcast.emit("typing", { senderName }); // broadcasts to everyone except sender
+  });
+
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('A user disconnected:', socket.id);
   });
 });
 
 // Start the server
-server.listen(7000, () => {
-  console.log('Server is running on http://localhost:7000');
+const PORT = 7000;
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

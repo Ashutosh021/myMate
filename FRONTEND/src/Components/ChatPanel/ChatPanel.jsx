@@ -1,65 +1,117 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatPanel.css';
 import io from 'socket.io-client';
+import axios from 'axios';
 
 const ChatPanel = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef(null);
-  const socket = useRef(null); // Create socket reference
+  const [user, setUser] = useState({ name: "Anonymous", profilePhoto: "" });
+  const [typingUser, setTypingUser] = useState(null);
+  const messagesContainerRef = useRef(null);
+  const socket = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
-  // Connect to the server
   useEffect(() => {
-    socket.current = io(import.meta.env.REACT_APP_CHAT_API); // Connect to the backend server
-
-    // Listen for incoming messages
-    socket.current.on('receive_message', (message) => {
-      setMessages((prevMessages) => {
-        // Avoid adding the same message multiple times
-        if (!prevMessages.some((msg) => msg.text === message.text)) {
-          return [...prevMessages, message];
-        }
-        return prevMessages; // Don't add duplicate messages
-      });
+    // Connect to the backend server running on http://localhost:5000
+    socket.current = io(`${import.meta.env.VITE_BACKEND_URL}`, {
+      transports: ["websocket"],
     });
 
-    // Cleanup on component unmount
+    socket.current.on('receive_message', (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    socket.current.on('typing', ({ senderName }) => {
+      setTypingUser(senderName);
+
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        setTypingUser(null);
+      }, 3000); // Clear typing indicator after 3 seconds
+    });
+
     return () => {
       socket.current.disconnect();
+      clearTimeout(typingTimeoutRef.current);
     };
   }, []);
 
+  // Fetch user info
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      const fetchUser = async () => {
+        try {
+          const authToken = localStorage.getItem("authToken");
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/getuser/${storedUserId}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
 
-  // Send message handler
+          setUser({
+            profilePhoto: response.data.user.profilePic || "defaultProfilePhotoUrl.jpg",
+            name: response.data.user.name || "Anonymous",
+          });
+
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchUser();
+    }
+  }, []);
+
+  // Scroll to bottom of the messages container on new message
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      messagesContainerRef.current?.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [messages]);
+
+  // Handle message sending
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
 
-    const message = { sender: "user", text: newMessage };
-    setMessages((prevMessages) => [...prevMessages, message]); // Update local state
+    const message = {
+      id: Date.now(),
+      sender: user.name,
+      text: newMessage,
+    };
 
-    // Emit the message to the backend server
-    socket.current.emit('send_message', message);
-
-    setNewMessage(""); // Clear the input field
+    socket.current.emit('send_message', message); // Send message to backend
+    setNewMessage("");
   };
 
-  // Send message on Enter key press
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSendMessage();
   };
 
+  const handleTyping = () => {
+    socket.current.emit("typing", { senderName: user.name }); // Emit typing event
+  };
+
   return (
     <div className="chat-panel">
-      <div className="chat-messages">
-        {messages.map((msg, index) => (
+      <div className="chat-messages" ref={messagesContainerRef}>
+        {messages.map((msg) => (
           <div
-            key={index}
-            className={`chat-message ${msg.sender === "user" ? "user" : "receiver"}`}
+            key={msg.id}
+            className={`chat-message ${msg.sender === user.name ? "user" : "receiver"}`}
           >
-            <p>{msg.text}</p>
+            <strong>{msg.sender}: </strong><p>{msg.text}</p>
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        {typingUser && (
+          <div className="typing-indicator">{typingUser} is typing...</div>
+        )}
       </div>
 
       <div className="chat-input">
@@ -67,8 +119,11 @@ const ChatPanel = ({ onClose }) => {
           type="text"
           placeholder="Type message here..."
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onChange={(e) => {
+            setNewMessage(e.target.value);
+            handleTyping(); // Send typing event on input change
+          }}
+          onKeyDown={handleKeyPress}
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>

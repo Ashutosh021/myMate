@@ -1,4 +1,5 @@
 const userSchema = require("../Models/user");
+const Education = require("../Models/education");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
@@ -232,6 +233,72 @@ const Unfollow = async (req, res) => {
   }
 };
 
+const UpdateEducation = async (req, res) => {
+  try {
+    const educationId = req.params.id;
+    const userId = req.user.id; // assuming user is authenticated and userId is available
+
+    // Try to update the education record
+    let updated = await Education.findByIdAndUpdate(
+      educationId,
+      {
+        $set: {
+          institution: req.body.institution,
+          degree: req.body.degree,
+          duration: req.body.duration,
+          grade: req.body.grade,
+          skills: req.body.skills,
+        },
+      },
+      { new: true }
+    );
+
+    // If not found, create a new one
+    if (!updated) {
+      const newEducation = new Education({
+        institution: req.body.institution,
+        degree: req.body.degree,
+        duration: req.body.duration,
+        grade: req.body.grade,
+        skills: req.body.skills,
+      });
+
+      const savedEducation = await newEducation.save();
+
+      // Link new education to the user
+      const user = await userSchema.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.education.push(savedEducation._id);
+      await user.save();
+
+      return res.status(201).json({ message: "New education created", education: savedEducation });
+    }
+
+    res.json({ message: "Education updated", updated });
+  } catch (error) {
+    console.error("Error in update-education:", error);
+    res.status(500).json({ message: "Failed to update or create education", error });
+  }
+};
+
+
+
+
+const GetEducation = async (req, res) => {
+  try {
+    const user = await userSchema.findById(req.params.userId).populate("education");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ education: user.education });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+
 module.exports = {
   Profile,
   UpdateBio,
@@ -240,4 +307,6 @@ module.exports = {
   GetUser,
   Follow,
   Unfollow,
+  UpdateEducation,
+  GetEducation
 };
