@@ -1,5 +1,6 @@
 const userSchema = require("../Models/user");
 const Education = require("../Models/education");
+const ProjectSchema = require("../Models/Project");
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 
@@ -284,6 +285,45 @@ const UpdateEducation = async (req, res) => {
   }
 };
 
+const Project = async (req, res) => {
+  const { name, url, technologies, teamMembers, description} = req.body;
+  const userId = req.user?._id;
+
+  try {
+    const newProject = new ProjectSchema({
+      name,
+      url,
+      technologies,
+      teamMembers,
+      description,
+      user: userId,
+    });
+
+    await newProject.save();
+
+    // Update the user with the new project reference
+    await userSchema.findByIdAndUpdate(userId, {
+      $push: { projects: newProject._id },
+    });
+
+    res.status(201).json({ message: 'Project added successfully', project: newProject });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const GetProject = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const projects = await ProjectSchema.find({ user: userId }).sort({ createdAt: -1 });
+    res.status(200).json({ projects });
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    res.status(500).json({ message: "Server error while fetching projects" });
+  }
+};
 
 
 
@@ -298,6 +338,33 @@ const GetEducation = async (req, res) => {
 };
 
 
+const WebLinks = async (req, res) => {
+  const { name, url } = req.body;
+  const userId = req.user?._id; // User ID from the authenticated user
+  
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is missing or invalid' });
+  }
+
+  try {
+    const updatedUser = await userSchema.findByIdAndUpdate(
+      userId,
+      { $push: { weblinks: { name, url } } },
+      { new: true }
+    );
+    
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json({ message: 'Link added successfully', updatedUser });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
 
 module.exports = {
   Profile,
@@ -308,5 +375,8 @@ module.exports = {
   Follow,
   Unfollow,
   UpdateEducation,
-  GetEducation
+  GetEducation,
+  WebLinks,
+  Project,
+  GetProject
 };

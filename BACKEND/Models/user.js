@@ -51,10 +51,11 @@ const userSchema = new mongoose.Schema(
     ],
     weblinks: [
       {
-        type: String,
-        default: [], // Default to an empty array
+        name: { type: String, required: true },
+        url: { type: String, required: true },
       },
     ],
+
     education: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -64,7 +65,7 @@ const userSchema = new mongoose.Schema(
     projects: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "project", // Refers to projects
+        ref: "Project",
       },
     ],
     followers: [

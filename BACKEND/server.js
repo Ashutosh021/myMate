@@ -13,7 +13,7 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // Frontend URL
+  origin: process.env.FRONTEND_URL_LOCAL, // Frontend URL
   credentials: true // Allow cookies to be sent
 }));
 
@@ -30,7 +30,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO and bind it to the server
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL_LOCAL, // Frontend URL
+    origin: process.env.FRONTEND_URL, // Frontend URL
     methods: ["GET", "POST"],
     credentials: true
   }
