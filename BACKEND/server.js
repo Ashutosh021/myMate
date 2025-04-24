@@ -13,7 +13,7 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: process.env.FRONTEND_URL_LOCAL, // Frontend URL
+  origin: process.env.FRONTEND_URL, // Frontend URL
   credentials: true // Allow cookies to be sent
 }));
 
