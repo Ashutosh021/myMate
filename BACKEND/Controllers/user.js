@@ -234,56 +234,7 @@ const Unfollow = async (req, res) => {
   }
 };
 
-const UpdateEducation = async (req, res) => {
-  try {
-    const educationId = req.params.id;
-    const userId = req.user.id; // assuming user is authenticated and userId is available
 
-    // Try to update the education record
-    let updated = await Education.findByIdAndUpdate(
-      educationId,
-      {
-        $set: {
-          institution: req.body.institution,
-          degree: req.body.degree,
-          duration: req.body.duration,
-          grade: req.body.grade,
-          skills: req.body.skills,
-        },
-      },
-      { new: true }
-    );
-
-    // If not found, create a new one
-    if (!updated) {
-      const newEducation = new Education({
-        institution: req.body.institution,
-        degree: req.body.degree,
-        duration: req.body.duration,
-        grade: req.body.grade,
-        skills: req.body.skills,
-      });
-
-      const savedEducation = await newEducation.save();
-
-      // Link new education to the user
-      const user = await userSchema.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      user.education.push(savedEducation._id);
-      await user.save();
-
-      return res.status(201).json({ message: "New education created", education: savedEducation });
-    }
-
-    res.json({ message: "Education updated", updated });
-  } catch (error) {
-    console.error("Error in update-education:", error);
-    res.status(500).json({ message: "Failed to update or create education", error });
-  }
-};
 
 const Project = async (req, res) => {
   const { name, url, technologies, teamMembers, description} = req.body;
@@ -325,19 +276,6 @@ const GetProject = async (req, res) => {
   }
 };
 
-
-
-const GetEducation = async (req, res) => {
-  try {
-    const user = await userSchema.findById(req.params.userId).populate("education");
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.status(200).json({ education: user.education });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-};
-
-
 const WebLinks = async (req, res) => {
   const { name, url } = req.body;
   const userId = req.user?._id; // User ID from the authenticated user
@@ -364,6 +302,95 @@ const WebLinks = async (req, res) => {
   }
 };
 
+const UpdateEducation = async (req, res) => {
+  try {
+    const eduId = req.params.eduId;
+    console.log(eduId);
+
+    const updated = await Education.findByIdAndUpdate(
+      eduId,
+      {
+        $set: {
+          institution: req.body.institution,
+          degree: req.body.degree,
+          duration: req.body.duration,
+          grade: req.body.grade,
+          skills: req.body.skills,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Education not found" });
+    }
+
+    res.json({ message: "Education updated", updated });
+  } catch (error) {
+    console.error("UpdateEducation error:", error);
+    res.status(500).json({ message: "Failed to update education" });
+  }
+};
+
+
+
+const GetEducation = async (req, res) => {
+  try {
+    const user = await userSchema.findById(req.params.userId).populate("education");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ education: user.education });
+  } catch (err) {
+    console.error("GetEducation error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+
+const AddEducation = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const newEducation = new Education({
+      institution: req.body.institution,
+      degree: req.body.degree,
+      duration: req.body.duration,
+      grade: req.body.grade,
+      skills: req.body.skills,
+    });
+
+    const savedEducation = await newEducation.save();
+
+    // Add education to the user's record
+    const user = await userSchema.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.education.push(savedEducation._id);
+    await user.save();
+
+    res.status(201).json({ message: "Education added", education: savedEducation });
+  } catch (error) {
+    console.error("AddEducation error:", error);
+    res.status(500).json({ message: "Failed to add education" });
+  }
+};
+
+// const SearchIt =  async (req, res) => {
+//   const query = req.query.query;
+//   try {
+//     const users = await User.find({
+//       name: { $regex: query, $options: "i" },
+//     }).select("name profilePic _id");
+//     res.json({ users });
+//   } catch (error) {
+//     res.status(500).json({ error: "Search failed" });
+//   }
+// }
+
+
+
+
 
 
 module.exports = {
@@ -376,7 +403,9 @@ module.exports = {
   Unfollow,
   UpdateEducation,
   GetEducation,
+  AddEducation,
   WebLinks,
   Project,
-  GetProject
+  GetProject,
+  // SearchIt
 };

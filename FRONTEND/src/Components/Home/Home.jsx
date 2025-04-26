@@ -9,9 +9,9 @@ const Home = () => {
       <main className="mymate-main">
         <div className="left-section">
           <h1>Welcome to your professional community</h1>
-          <NavLink to={"./infuture"}>
+          {/* <NavLink to={"./infuture"}>
             <button className="google-signin">Continue with Google</button>
-          </NavLink>
+          </NavLink> */}
           <NavLink to={"./login"}>
             <button className="email-signin">Login with email</button>
           </NavLink>

@@ -94,16 +94,16 @@ const Navbar = () => {
             <FaSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search Courses, Documents, Activities..."
+              placeholder="Search users..."
               className="search-input"
             />
           </div>
 
           <div className="navbar-icons">
-            <div className="icon notification">
+            {/* <div className="icon notification">
               <FaBell />
               <span className="notification-dot"></span>
-            </div>
+            </div> */}
             {isDarkMode ? (
               <FaSun className="icon" onClick={toggleDarkMode} />
             ) : (
